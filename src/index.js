@@ -48,7 +48,7 @@ client.on("interactionCreate", async (interation) => {
       }
     }
   } catch(error) {
-    interation.reply("```Please use the currect type of input surah number between 1 to 114 and range number with - and number example surah: 1 range: 1-7```")
+    interation.reply("```Please use the currect type of input surah number between 1 to 114 and range number with - and number example surah: 1 range: 1-7 or may the verses does not exist.```")
   }
 });
 
