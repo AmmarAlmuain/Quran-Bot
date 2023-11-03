@@ -1,4 +1,5 @@
 require("dotenv").config();
+const keepAlive = require("./server")
 const { Client, IntentsBitField, EmbedBuilder } = require("discord.js");
 const getVerses = require("../utils/getVerses");
 
@@ -53,3 +54,4 @@ client.on("interactionCreate", async (interation) => {
 });
 
 client.login(process.env.BOT_TOKEN);
+keepAlive();
