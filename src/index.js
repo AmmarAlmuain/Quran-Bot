@@ -2,7 +2,7 @@ require("dotenv").config();
 const keepAlive = require("./server");
 const { Client, IntentsBitField, EmbedBuilder } = require("discord.js");
 const getVerses = require("../utils/getVerses");
-const AnythingModel = require("./database/models/anything");
+const { AnythingModel } = require("./database/models/anything");
 const mongoose = require("mongoose")
 
 try {
