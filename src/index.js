@@ -2,7 +2,6 @@ require("dotenv").config();
 const keepAlive = require("./server");
 const { Client, IntentsBitField, EmbedBuilder } = require("discord.js");
 const getVerses = require("../utils/getVerses");
-const { AnythingModel } = require("./database/models/anything");
 const mongoose = require("mongoose")
 
 try {
@@ -11,6 +10,14 @@ try {
 } catch(error) {
     console.log(error)
 }
+
+const Schema = mongoose.Schema;
+
+const anythingSchema = new Schema({
+  anything: Schema.Types.Mixed
+}, { timestamps: true });
+
+const AnythingModel = mongoose.model('Anything', anythingSchema);
 
 const client = new Client({
   intents: [
@@ -27,6 +34,7 @@ client.on("ready", (client) => {
 
 client.on("messageCreate", async (message) => {
   if(message.author.bot) return
+  console.log(message.content)
   const anything = new AnythingModel({
     anything: {
       content: message.content,
