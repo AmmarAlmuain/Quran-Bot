@@ -1,9 +1,16 @@
 require("dotenv").config();
-require("./database/index");
 const keepAlive = require("./server");
 const { Client, IntentsBitField, EmbedBuilder } = require("discord.js");
 const getVerses = require("../utils/getVerses");
 const AnythingModel = require("./database/models/anything");
+const mongoose = require("mongoose")
+
+try {
+    mongoose.connect(process.env.DB_CONNECTION_URI)
+    console.log("Database is connected!")
+} catch(error) {
+    console.log(error)
+}
 
 const client = new Client({
   intents: [
