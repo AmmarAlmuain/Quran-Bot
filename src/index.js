@@ -2,22 +2,25 @@ require("dotenv").config();
 const keepAlive = require("./server");
 const { Client, IntentsBitField, EmbedBuilder } = require("discord.js");
 const getVerses = require("../utils/getVerses");
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 try {
-    mongoose.connect(process.env.DB_CONNECTION_URI)
-    console.log("Database is connected!")
-} catch(error) {
-    console.log(error)
+  mongoose.connect(process.env.DB_CONNECTION_URI);
+  console.log("Database is connected!");
+} catch (error) {
+  console.log(error);
 }
 
 const Schema = mongoose.Schema;
 
-const anythingSchema = new Schema({
-  anything: Schema.Types.Mixed
-}, { timestamps: true });
+const anythingSchema = new Schema(
+  {
+    anything: Schema.Types.Mixed,
+  },
+  { timestamps: true }
+);
 
-const AnythingModel = mongoose.model('Anything', anythingSchema);
+const AnythingModel = mongoose.model("Anything", anythingSchema);
 
 const client = new Client({
   intents: [
@@ -33,15 +36,62 @@ client.on("ready", (client) => {
 });
 
 client.on("messageCreate", async (message) => {
-  if(message.author.bot) return
-  console.log(message.content)
+  if (message.author.bot) return;
+  if (message.content == "-tm") {
+    const countDocuments = await AnythingModel.countDocuments();
+    message.reply(
+      "```The total messages i have recognized is " + countDocuments + "```"
+    );
+    return;
+  }
+  if (message.content == "-mm") {
+    const myMessages = await AnythingModel.countDocuments({
+      "anything.author.id": message.author.id,
+    });
+    message.reply(
+      "```" +
+        message.author.globalName +
+        " have sent " +
+        myMessages +
+        " messages good job" +
+        "```"
+    );
+    return;
+  }
+  if (message.content == "-rm") {
+    const topThree = await AnythingModel.aggregate([
+      {
+        $group: {
+          _id: "$anything.author.id",
+          globalName: { $first: "$anything.author.globalName" },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { count: -1 } },
+      { $limit: 3 },
+    ]);
+
+    let reply = "```";
+    for (let i = 0; i < topThree.length; i++) {
+      reply +=
+        "(" +
+        topThree[i].globalName +
+        ") has sent " +
+        topThree[i].count +
+        " messages.\n";
+    }
+    reply += "```";
+
+    message.reply(reply);
+    return;
+  }
   const anything = new AnythingModel({
     anything: {
       content: message.content,
       author: {
         username: message.author.username,
         globalName: message.author.globalName,
-        id: message.author.id
+        id: message.author.id,
       },
     },
   });
@@ -60,31 +110,44 @@ client.on("interactionCreate", async (interation) => {
       if (range.value.includes("-")) {
         verses.map((el) => {
           fields.push({
-            name: el["content"].length > 252 ? el["content"].slice(0, 251) + "..." : el["content"].slice(0, 251) + "",
-            value: el["translation_eng"].length > 1022 ? el["translation_eng"].slice(0, 1021) + "..." : el["translation_eng"].slice(0, 1021) + ""
+            name:
+              el["content"].length > 252
+                ? el["content"].slice(0, 251) + "..."
+                : el["content"].slice(0, 251) + "",
+            value:
+              el["translation_eng"].length > 1022
+                ? el["translation_eng"].slice(0, 1021) + "..."
+                : el["translation_eng"].slice(0, 1021) + "",
           });
         });
-        const embed = new EmbedBuilder()
-          .setFields(...fields)
-          .setTimestamp();
+        const embed = new EmbedBuilder().setFields(...fields).setTimestamp();
         interation.reply({ embeds: [embed] });
         fields = [];
-        return
+        return;
       } else {
         const embed = new EmbedBuilder()
-          .setDescription(verses[1].length > 1042 ? verses[1].slice(0, 1041) + "..." : verses[1].slice(0, 1041))
-          .setFooter({ text: verses[2].length > 2042 ? verses[2].slice(0, 2041) + "...": verses[2].slice(0, 2041)  })
+          .setDescription(
+            verses[1].length > 1042
+              ? verses[1].slice(0, 1041) + "..."
+              : verses[1].slice(0, 1041)
+          )
+          .setFooter({
+            text:
+              verses[2].length > 2042
+                ? verses[2].slice(0, 2041) + "..."
+                : verses[2].slice(0, 2041),
+          })
           .setTimestamp();
         interation.reply({ embeds: [embed] });
-        return
+        return;
       }
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     interation.reply(
       "```Please make sure you use the command currectly or the verses is not exist or there is to long verse use only one verse method and not range```"
     );
-    return
+    return;
   }
 });
 
