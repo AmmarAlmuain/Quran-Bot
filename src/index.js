@@ -2,6 +2,7 @@ require("dotenv").config();
 const keepAlive = require("./server");
 const { Client, IntentsBitField, EmbedBuilder } = require("discord.js");
 const getVerses = require("../utils/getVerses");
+const getGifs = require("../utils/getGifs");
 const mongoose = require("mongoose");
 
 try {
@@ -100,6 +101,11 @@ client.on("messageCreate", async (message) => {
 
 client.on("interactionCreate", async (interation) => {
   if (!interation.isChatInputCommand()) return;
+  if (interation.commandName === "anime_gif") {
+    reaction = interation.options.get("reaction");
+    interation.reply(await getGifs(reaction.value));
+    return;
+  }
   try {
     if (interation.commandName === "quran") {
       const surah = interation.options.get("surah"),

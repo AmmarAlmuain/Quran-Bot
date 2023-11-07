@@ -21,7 +21,77 @@ const commands = [
         name: "range",
         description: "Number of verses you want from the surah.",
         type: ApplicationCommandOptionType.String,
-        required: true
+        required: true,
+      },
+    ],
+  },
+  {
+    name: "anime_gif",
+    description: "Return anime gifs",
+    options: [
+      {
+        name: "reaction",
+        description: "The gif reaction",
+        type: ApplicationCommandOptionType.String,
+        required: true,
+        choices: [
+          {
+            name: "clap",
+            value: "clap",
+          },
+          {
+            name: "cry",
+            value: "cry",
+          },
+          {
+            name: "happy",
+            value: "happy",
+          },
+          {
+            name: "hug",
+            value: "hug",
+          },
+          {
+            name: "laugh",
+            value: "laugh",
+          },
+          {
+            name: "punch",
+            value: "punch",
+          },
+          {
+            name: "no",
+            value: "no",
+          },
+          {
+            name: "sad",
+            value: "sad",
+          },
+          {
+            name: "scared",
+            value: "scared",
+          },
+          {
+            name: "shy",
+            value: "shy",
+          },
+          {
+            name: "sleep",
+            value: "sleep",
+          },
+          {
+            name: "sorry",
+            value: "sorry",
+          },
+          {
+            name: "stare",
+            value: "stare",
+          },
+          {
+            name: "yes",
+            value: "yes",
+          },
+        ],
       },
     ],
   },
